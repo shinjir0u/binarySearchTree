@@ -127,6 +127,24 @@ class Tree {
     callback(node);
   }
 
+  height(node = this.root) {
+    let counter;
+    if (node === null) return -1;
+    counter = 1 + this.height(node.left);
+    counter = Math.max(counter, 1 + this.height(node.right));
+    return counter;
+  }
+
+  depth(node = this.root, currentNode = this.root) {
+    let counter, anotherCounter;
+    if (currentNode === null) return NaN;
+    if (currentNode === node) return 0;
+    counter = 1 + this.depth(node, currentNode.left);
+    if (Number.isInteger(counter)) return counter;
+    anotherCounter = 1 + this.depth(node, currentNode.right);
+    return anotherCounter;
+  }
+
   prettyPrint(node, prefix = "", isLeft = true) {
     if (node === null) {
       return;
@@ -145,7 +163,8 @@ class Tree {
   }
 }
 
-const tree = new Tree([6, 2, 7, 8, 1, 9, 6, 0]);
+const tree = new Tree([6, 2, 7, 8, 1, 9, 6, 0, 10, 24, 54, 300, 150, 129, 55, 8, 3, 90]);
 console.log(tree.array);
 tree.prettyPrint(tree.root);
-tree.postOrder(console.log);
+console.log(tree.root.left.right.right);
+console.log(tree.height(tree.root.left.right.right));
