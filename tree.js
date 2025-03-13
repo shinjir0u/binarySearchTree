@@ -145,6 +145,19 @@ class Tree {
     return anotherCounter;
   }
 
+  isBalanced() {
+    if (this.root === null) return true;
+    let leftSubtreeHeight = this.height(this.root.left) + 1;
+    let rightSubtreeHeight = this.height(this.root.right) + 1;
+    return Math.abs(leftSubtreeHeight - rightSubtreeHeight) <= 1;
+  }
+
+  rebalance() {
+    this.array = [];
+    this.inOrder((node) => this.array.push(node.data));
+    this.root = this.buildTree(this.array);
+  }
+
   prettyPrint(node, prefix = "", isLeft = true) {
     if (node === null) {
       return;
@@ -163,8 +176,14 @@ class Tree {
   }
 }
 
-const tree = new Tree([6, 2, 7, 8, 1, 9, 6, 0, 10, 24, 54, 300, 150, 129, 55, 8, 3, 90]);
+const tree = new Tree([
+  6, 2, 7, 8, 1, 9, 6, 0, 10, 24, 54, 300, 150, 129, 55, 8, 3, 90,
+]);
+console.log(tree.array);
+tree.insert(99);
+tree.insert(45);
+tree.prettyPrint(tree.root);
+console.log(tree.isBalanced());
+tree.rebalance();
 console.log(tree.array);
 tree.prettyPrint(tree.root);
-console.log(tree.root.left.right.right);
-console.log(tree.height(tree.root.left.right.right));
