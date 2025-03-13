@@ -176,14 +176,19 @@ class Tree {
   }
 }
 
-const tree = new Tree([
-  6, 2, 7, 8, 1, 9, 6, 0, 10, 24, 54, 300, 150, 129, 55, 8, 3, 90,
-]);
-console.log(tree.array);
-tree.insert(99);
-tree.insert(45);
+const generateRandomNumber = function generateRandomNumberBetween(n, min = 0) {
+  return Math.floor(Math.random() * n) + min;
+};
+
+const array = [];
+const randomNumber = generateRandomNumber(100);
+for (let i = 0; i < randomNumber; i++) array.push(generateRandomNumber(100));
+
+const tree = new Tree(array);
+tree.prettyPrint(tree.root);
+for (let i = 0; i < 20; i++) tree.insert(generateRandomNumber(100, 100));
 tree.prettyPrint(tree.root);
 console.log(tree.isBalanced());
 tree.rebalance();
-console.log(tree.array);
 tree.prettyPrint(tree.root);
+console.log(tree.isBalanced());
