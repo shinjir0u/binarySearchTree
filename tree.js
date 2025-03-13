@@ -86,6 +86,47 @@ class Tree {
     return currentNode;
   }
 
+  levelOrder(callback) {
+    if (!callback) throw new Error("undefined callback function");
+    if (this.root === null) return;
+
+    let currentNode = this.root;
+    let levelOrderQueue = [currentNode];
+    while (levelOrderQueue.length > 0) {
+      currentNode = levelOrderQueue.shift();
+      callback(currentNode);
+      if (currentNode.left) levelOrderQueue.push(currentNode.left);
+      if (currentNode.right) levelOrderQueue.push(currentNode.right);
+    }
+  }
+
+  inOrder(callback, node = this.root) {
+    if (!callback) throw new Error("undefined callback function");
+    if (node === null) return;
+
+    this.inOrder(callback, node.left);
+    callback(node);
+    this.inOrder(callback, node.right);
+  }
+
+  preOrder(callback, node = this.root) {
+    if (!callback) throw new Error("undefined callback function");
+    if (node === null) return;
+
+    callback(node);
+    this.preOrder(callback, node.left);
+    this.preOrder(callback, node.right);
+  }
+
+  postOrder(callback, node = this.root) {
+    if (!callback) throw new Error("undefined callback function");
+    if (node === null) return;
+
+    this.postOrder(callback, node.left);
+    this.postOrder(callback, node.right);
+    callback(node);
+  }
+
   prettyPrint(node, prefix = "", isLeft = true) {
     if (node === null) {
       return;
@@ -106,5 +147,5 @@ class Tree {
 
 const tree = new Tree([6, 2, 7, 8, 1, 9, 6, 0]);
 console.log(tree.array);
-console.log(tree.find(6));
 tree.prettyPrint(tree.root);
+tree.postOrder(console.log);
