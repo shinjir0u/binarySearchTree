@@ -11,7 +11,7 @@ class Tree {
     for (let element of array)
       if (!arrayWithNoDuplicate.includes(element))
         arrayWithNoDuplicate.push(element);
-    return arrayWithNoDuplicate.sort();
+    return arrayWithNoDuplicate.sort((a, b) => a - b);
   }
 
   buildTree(array) {
@@ -28,76 +28,43 @@ class Tree {
     return root;
   }
 
-  insert(value) {
-    let currentNode = this.root;
-    let previousNode;
-    let direction;
-
-    while (currentNode) {
-      if (value === currentNode.data) return;
-      else if (value < currentNode.data)
-        [previousNode, currentNode, direction] = [
-          currentNode,
-          currentNode.left,
-          "left",
-        ];
-      else if (value > currentNode.data)
-        [previousNode, currentNode, direction] = [
-          currentNode,
-          currentNode.right,
-          "right",
-        ];
-    }
-    previousNode[direction] = new Node(value);
+  insert(value, node = this.root) {
+    if (node === null) return new Node(value);
+    if (node.data === value) return node;
+    if (value < node.data) node.left = this.insert(value, node.left);
+    if (value > node.data) node.right = this.insert(value, node.right);
+    return node;
   }
 
-  delete(value) {
-    let currentNode = this.root;
-    let previousNode;
-    let direction;
-
-    while (currentNode) {
-      if (value === currentNode.data) break;
-      else if (value < currentNode.data)
-        [previousNode, currentNode, direction] = [
-          currentNode,
-          currentNode.left,
-          "left",
-        ];
-      else if (value > currentNode.data)
-        [previousNode, currentNode, direction] = [
-          currentNode,
-          currentNode.right,
-          "right",
-        ];
+  delete(value, node = this.root) {
+    if (node === null) return node;
+    if (node.data === value) {
+      if (node.left === null) return node.right;
+      if (node.right === null) return node.left;
+      let currentNode = node.right;
+      while (currentNode !== null && currentNode.left !== null)
+        currentNode = currentNode.left;
+      node.data = currentNode.data;
+      this.delete(currentNode.data, node.right);
     }
-    if (currentNode === null) return;
-    previousNode[direction] = currentNode.left || currentNode.right;
-    if (currentNode.left !== null) currentNode.left.right = currentNode.right;
+    if (value < node.data) node.left = this.delete(value, node.left);
+    if (value > node.data) node.right = this.delete(value, node.right);
+    return node;
   }
 
-  find(value) {
-    let currentNode = this.root;
-    while (currentNode) {
-      if (value === currentNode.data) return currentNode;
-      else if (value < currentNode.data) currentNode = currentNode.left;
-      else if (value > currentNode.data) currentNode = currentNode.right;
-    }
-    return currentNode;
+  find(value, node = this.root) {
+    if (node === null || value === node.data) return node;
+    if (value < node.data) return this.find(value, node.left);
+    if (value > node.data) return this.find(value, node.right);
   }
 
-  levelOrder(callback) {
-    if (!callback) throw new Error("undefined callback function");
-    if (this.root === null) return;
-
-    let currentNode = this.root;
-    let levelOrderQueue = [currentNode];
-    while (levelOrderQueue.length > 0) {
-      currentNode = levelOrderQueue.shift();
-      callback(currentNode);
-      if (currentNode.left) levelOrderQueue.push(currentNode.left);
-      if (currentNode.right) levelOrderQueue.push(currentNode.right);
-    }
+  levelOrderRecursive(callback, levelOrderArray = [this.root]) {
+    if (levelOrderArray.length === 0) return;
+    const node = levelOrderArray.shift();
+    if (node.left) levelOrderArray.push(node.left);
+    if (node.right) levelOrderArray.push(node.right);
+    callback(node);
+    this.levelOrderRecursive(callback, levelOrderArray);
   }
 
   inOrder(callback, node = this.root) {
@@ -128,21 +95,19 @@ class Tree {
   }
 
   height(node = this.root) {
-    let counter;
     if (node === null) return -1;
-    counter = 1 + this.height(node.left);
-    counter = Math.max(counter, 1 + this.height(node.right));
-    return counter;
+    let leftHeight = 1 + this.height(node.left);
+    let rightHeight = 1 + this.height(node.right);
+    return Math.max(leftHeight, rightHeight);
   }
 
   depth(node = this.root, currentNode = this.root) {
-    let counter, anotherCounter;
     if (currentNode === null) return NaN;
     if (currentNode === node) return 0;
-    counter = 1 + this.depth(node, currentNode.left);
-    if (Number.isInteger(counter)) return counter;
-    anotherCounter = 1 + this.depth(node, currentNode.right);
-    return anotherCounter;
+    let leftDepth = 1 + this.depth(node, currentNode.left);
+    if (Number.isInteger(leftDepth)) return leftDepth;
+    let rightDepth = 1 + this.depth(node, currentNode.right);
+    return rightDepth;
   }
 
   isBalanced() {
@@ -182,13 +147,9 @@ const generateRandomNumber = function generateRandomNumberBetween(n, min = 0) {
 
 const array = [];
 const randomNumber = generateRandomNumber(100);
-for (let i = 0; i < randomNumber; i++) array.push(generateRandomNumber(100));
+for (let i = 0; i < 15; i++) array.push(i);
 
 const tree = new Tree(array);
+console.log(tree.depth(tree.root.left.right));
+console.log(tree.root.left.right);
 tree.prettyPrint(tree.root);
-for (let i = 0; i < 20; i++) tree.insert(generateRandomNumber(100, 100));
-tree.prettyPrint(tree.root);
-console.log(tree.isBalanced());
-tree.rebalance();
-tree.prettyPrint(tree.root);
-console.log(tree.isBalanced());
