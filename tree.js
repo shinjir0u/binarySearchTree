@@ -29,6 +29,10 @@ class Tree {
   }
 
   insert(value, node = this.root) {
+    if (this.root === null) {
+      this.root = new Node(value);
+      return;
+    }
     if (node === null) return new Node(value);
     if (node.data === value) return node;
     if (value < node.data) node.left = this.insert(value, node.left);
@@ -146,10 +150,9 @@ const generateRandomNumber = function generateRandomNumberBetween(n, min = 0) {
 };
 
 const array = [];
-const randomNumber = generateRandomNumber(100);
-for (let i = 0; i < 15; i++) array.push(i);
+// const randomNumber = generateRandomNumber(100);
+// for (let i = 0; i < 15; i++) array.push(i);
 
 const tree = new Tree(array);
-console.log(tree.depth(tree.root.left.right));
-console.log(tree.root.left.right);
+tree.insert(3);
 tree.prettyPrint(tree.root);
